@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const parse = require('csv-parse');
+const cfg = require('../knexfile');
+const knex = require('knex')(cfg.development);
+const csv = require('./csv');
 
 const app = express();
 
@@ -11,33 +13,15 @@ const upload = multer();
 app.post('/uploads', cors(), upload.single('file'), (req, res) => {
   const file = req.file;
   const meta = req.body;
-  let saida = [];
-  let count = 0;
 
-  // console.log(file);
-  // console.log(meta);
-  const csv = parse({
-    skip_empty_lines: true,
-    trim: true,
-    columns: true
-  });
+  console.log(file);
+  console.log(meta);
 
   csv.write(file.buffer);
   csv.end();
 
-  csv.on('readable', () => {
-    let record = csv.read();
-    while (record) {
-      saida.push(record);
-      record = csv.read();
-    }
-  });
-
-  csv.on('end', something => {
-    console.log(saida);
-  });
-
   // TODO: persist on pg
+  // knex('files');
   res.status(200).send({ uploadId: 8298 });
 });
 
