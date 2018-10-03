@@ -17,7 +17,7 @@ csv.on('readable', () => {
 });
 
 csv.on('end', _ => {
-  console.log(out);
+  // console.log(out);
 });
 
 module.exports = csv;

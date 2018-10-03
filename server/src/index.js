@@ -14,15 +14,36 @@ app.post('/uploads', cors(), upload.single('file'), (req, res) => {
   const file = req.file;
   const meta = req.body;
 
-  console.log(file);
-  console.log(meta);
-
   csv.write(file.buffer);
   csv.end();
 
-  // TODO: persist on pg
-  // knex('files');
-  res.status(200).send({ uploadId: 8298 });
+  const fileObj = {
+    filename: meta.filename,
+    file
+  };
+
+  knex('files')
+    .insert(fileObj, 'fileid')
+    .then(ret => res.status(200).send({ uploadId: ret }))
+    .catch(error => {
+      console.log(error);
+      res.status(500).send(error);
+    });
+});
+
+app.get('/uploads/:uploadId', cors(), (req, res) => {
+  const { uploadId } = req.params;
+  knex('files')
+    .select()
+    .where('fileid', '==', uploadId)
+    .then(ret => {
+      console.log(ret);
+      res.status(200).send(ret);
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).send(error);
+    });
 });
 
 app.listen(PORT, _ => console.log(`We're ONLINE on ${PORT}`));
