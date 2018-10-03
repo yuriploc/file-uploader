@@ -45,7 +45,9 @@ class UploadFile extends React.Component {
       <React.Fragment>
         <form encType="multipart/form-data" onSubmit={this.handleUpload}>
           <input type="text" ref={this.fileName} name="filename" />
+          <br/>
           <input type="file" ref={this.file} name="file" accept="text" />
+          <br/>
           <button type="submit">Upload File</button>
         </form>
         {this.state.isSent && (
