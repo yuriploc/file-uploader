@@ -1,5 +1,22 @@
 import React from 'react';
+import insertCss from 'insert-css';
+import css from 're-bulma/build/css';
+import {
+  Input,
+  Label,
+  FormHorizontal,
+  ControlLabel,
+  Group,
+  Button
+} from 're-bulma';
+import { BASE_URL } from '../constants/api';
 import AlertBox from './AlertBox';
+
+// CSS boilerplate
+try {
+  if (typeof document !== 'undefined' || document !== null)
+    insertCss(css, { prepend: true });
+} catch (e) {}
 
 class UploadFile extends React.Component {
   fileName = React.createRef();
@@ -12,7 +29,7 @@ class UploadFile extends React.Component {
     const formData = new FormData();
     formData.append('filename', this.fileName.current.value);
     formData.append('file', this.file.current.files[0]);
-    fetch('http://localhost:3001/uploads', {
+    fetch(`${BASE_URL}/uploads`, {
       method: 'POST',
       body: formData
     })
@@ -28,7 +45,7 @@ class UploadFile extends React.Component {
           boxMsg: `File uploaded. Id: ${res.uploadId}`,
           boxStyle: 'success'
         });
-        // this.props.history.push(`/uploads/${uploadId}`);
+        this.props.history.push(`/uploads/${res.uploadId}`);
       })
       .catch(error => {
         this.setState({
@@ -43,17 +60,38 @@ class UploadFile extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <form encType="multipart/form-data" onSubmit={this.handleUpload}>
-          <input type="text" ref={this.fileName} name="filename" />
-          <br/>
-          <input type="file" ref={this.file} name="file" accept="text" />
-          <br/>
-          <button type="submit">Upload File</button>
-        </form>
-        {this.state.isSent && (
-          <AlertBox boxStyle={this.state.boxStyle} boxMsg={this.state.boxMsg} />
-        )}
+        <FormHorizontal
+          encType="multipart/form-data"
+          onSubmit={this.handleUpload}
+        >
+          <ControlLabel>File name</ControlLabel>
+          <Group>
+            <Input type="text" ref={this.fileName} name="filename" required />
+            <Input
+              type="file"
+              ref={this.file}
+              name="file"
+              accept="text"
+              required
+            />
+            <Button type="submit" color="isInfo">
+              Submit
+            </Button>
+          </Group>
+        </FormHorizontal>
       </React.Fragment>
+      // <React.Fragment>
+      //   <form encType="multipart/form-data" onSubmit={this.handleUpload}>
+      //     <input type="text" ref={this.fileName} name="filename" />
+      //     <br />
+      //     <input type="file" ref={this.file} name="file" accept="text" />
+      //     <br />
+      //     <button type="submit">Upload File</button>
+      //   </form>
+      //   {this.state.isSent && (
+      //     <AlertBox boxStyle={this.state.boxStyle} boxMsg={this.state.boxMsg} />
+      //   )}
+      // </React.Fragment>
     );
   }
 }

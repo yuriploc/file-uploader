@@ -32,11 +32,11 @@ app.post('/uploads', cors(), upload.single('file'), (req, res) => {
 
 app.get('/uploads/:uploadId', cors(), (req, res) => {
   const { uploadId } = req.params;
-  knex('files')
+  knex('uploads')
     .select()
-    .where('fileid', '==', uploadId)
+    .leftJoin('shifts', 'uploads.uploadId', 'shifts.uploadId')
+    .where('uploads.uploadId', '=', uploadId)
     .then(ret => {
-      console.log(ret);
       res.status(200).send(ret);
     })
     .catch(error => {
